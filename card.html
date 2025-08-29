@@ -2,62 +2,270 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>七夕給妳的小小小遊戲</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>七夕給妳的小小遊戲</title>
+<meta name="description" content="一個悄悄為妳準備的七夕小小互動卡片。">
+<meta name="theme-color" content="#0f1020">
 <style>
-  body { margin:0; font-family:sans-serif; background:#0f1020; color:white; text-align:center; }
-  .stage{ display:none; }
-  .stage.active{ display:block; }
-  button{ margin:6px; padding:10px 14px; border:none; border-radius:8px; background:#ffb3c1; color:#000; cursor:pointer; }
-  .final-card{ background:#fff; color:#000; padding:20px; border-radius:12px; margin-top:20px; }
+  :root{
+    --bg:#0f1020;
+    --card:#ffffff;
+    --txt:#f7f7fb;
+    --accent:#ffb3c1;
+    --accent-2:#ffd6e0;
+    --muted:#98a2b3;
+    --ring:#ffd6e0;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: ui-rounded, ui-sans-serif, -apple-system, "Noto Sans TC", "PingFang TC",
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+    background: radial-gradient(1200px 600px at 50% -10%, #1c1d3a 0%, var(--bg) 60%, #0b0c1a 100%);
+    color:var(--txt); text-align:center; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+
+  /* 星空背景 */
+  .stars,.stars2,.stars3{
+    position:fixed; inset:0; pointer-events:none; z-index:-1; background-repeat:repeat;
+    background-image: radial-gradient(1px 1px at 20px 30px, #ffffff66 50%, transparent 51%),
+                      radial-gradient(1px 1px at 80px 120px, #ffffff66 50%, transparent 51%),
+                      radial-gradient(1px 1px at 200px 50px, #ffffff66 50%, transparent 51%),
+                      radial-gradient(1px 1px at 300px 200px, #ffffff66 50%, transparent 51%);
+    animation: drift 120s linear infinite;
+    opacity:.6;
+  }
+  .stars2{ animation-duration:160s; opacity:.45; filter:blur(.3px)}
+  .stars3{ animation-duration:220s; opacity:.35; filter:blur(.6px)}
+
+  @keyframes drift{ from{background-position:0 0} to{background-position:-1000px -800px} }
+
+  .app{
+    width:min(720px, 100%); margin:auto; backdrop-filter:saturate(120%) blur(0px);
+  }
+  h1{
+    font-size: clamp(20px, 3.8vw, 32px);
+    margin:4px 0 16px; letter-spacing:.04em;
+  }
+  p{ line-height:1.8; margin: 0 auto 16px; max-width: 38ch; }
+
+  .card{
+    background:#1b1c34cc; border:1px solid #24264a; border-radius:16px; padding:18px 14px;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 30%);
+  }
+
+  /* 問題舞台 */
+  .stage{ display:none; opacity:0; transform:translateY(6px); transition:opacity .36s ease, transform .36s ease; }
+  .stage.active{ display:block; opacity:1; transform:none; }
+  .q{ font-size: clamp(16px, 2.9vw, 22px); margin: 6px 0 14px; }
+
+  .btns{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center }
+  button{
+    margin:0; padding:12px 16px; border:none; border-radius:999px; background:var(--accent);
+    color:#1a1a1a; cursor:pointer; font-weight:600; letter-spacing:.02em;
+    box-shadow: 0 6px 14px rgb(255 179 193 / 40%);
+    transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+  }
+  button:hover{ transform: translateY(-1px); box-shadow:0 10px 18px rgb(255 179 193 / 42%); }
+  button:active{ transform: translateY(0); }
+  button:focus-visible{ outline:2px solid var(--ring); outline-offset:2px }
+
+  /* 進度 */
+  .progress{
+    margin: 8px auto 14px; height:8px; width:min(420px, 80%); background:#27274a; border-radius:999px; overflow:hidden;
+  }
+  .bar{ height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .35s ease; }
+
+  /* 完成卡片 */
+  #final{ display:none; }
+  .final-card{
+    background:var(--card); color:#111; padding:22px; border-radius:16px; margin-top:14px;
+    box-shadow: 0 10px 28px rgb(0 0 0 / 35%);
+  }
+  .final-card h2{ margin: 4px 0 8px }
+  .sig{ color:#555; margin-top:10px }
+
+  /* 漂浮愛心 */
+  .hearts{ position:relative; height:0; }
+  .heart{
+    position:fixed; bottom:-20px; left:50%; width:14px; height:14px; background:var(--accent);
+    transform: rotate(45deg); opacity:.8; pointer-events:none; z-index:3;
+    animation: floatUp 4.2s ease-in forwards;
+  }
+  .heart::before,.heart::after{
+    content:""; position:absolute; width:14px; height:14px; background:inherit; border-radius:50%;
+  }
+  .heart::before{ left:-7px; top:0 }
+  .heart::after{ top:-7px; left:0 }
+  @keyframes floatUp{
+    0%{ transform:translate(-50%,0) rotate(45deg); opacity:.0 }
+    10%{ opacity:.9 }
+    100%{ transform:translate(-50%,-110vh) rotate(45deg); opacity:0 }
+  }
+
+  /* 可及性：減少動態 */
+  @media (prefers-reduced-motion: reduce){
+    .stars,.stars2,.stars3{ animation:none }
+    .stage{ transition:none }
+    .heart{ animation:none; display:none }
+  }
+
+  /* 小字提示 */
+  .hint{ color:var(--muted); font-size:12px; margin-top:6px }
+  .footer{ margin-top:16px; color:var(--muted); font-size:12px }
+  a{ color:inherit }
+  .visually-hidden{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
 </style>
 </head>
 <body>
-<h1>七夕小遊戲（我很用心做的！！）</h1>
+<div class="stars"></div><div class="stars2"></div><div class="stars3"></div>
 
-<div id="stages">
-  <div class="stage active" data-step="1">
-    <p>看到「七夕」，你第一個想到的是？</p>
-    <button onclick="next()">浪漫的星空</button>
-    <button onclick="next()">甜甜的約會</button>
-  </div>
-  <div class="stage" data-step="2">
-    <p>如果今晚收到一個小驚喜，你會想是？</p>
-    <button onclick="next()">一杯喜歡的飲料</button>
-    <button onclick="next()">一張小卡片</button>
-  </div>
-  <div class="stage" data-step="3">
-    <p>我們下次見面，最想一起做什麼？</p>
-    <button onclick="next()">在海邊散步</button>
-    <button onclick="next()">吃好吃的</button>
-  </div>
-  <div class="stage" data-step="4">
-    <p>最後一題：此刻腦海裡浮現的三個字？</p>
-    <button onclick="showCard()">想你了</button>
-    <button onclick="showCard()">快見面</button>
-  </div>
-</div>
+<main class="app" role="main" aria-labelledby="title">
+  <h1 id="title">七夕小遊戲（我很用心做的！！）</h1>
+  <div class="card" id="game" role="group" aria-describedby="hint">
+    <div class="progress" aria-hidden="true"><div class="bar" id="bar" style="width:0%"></div></div>
 
-<div id="final" style="display:none;">
-  <div class="final-card">
+    <div id="stages">
+      <section class="stage active" data-step="1" aria-live="polite">
+        <p class="q">看到「七夕」，你第一個想到的是？</p>
+        <div class="btns">
+          <button type="button" data-next>浪漫的星空</button>
+          <button type="button" data-next>甜甜的約會</button>
+        </div>
+      </section>
+
+      <section class="stage" data-step="2" aria-live="polite">
+        <p class="q">如果今晚收到一個小驚喜，你會想是？</p>
+        <div class="btns">
+          <button type="button" data-next>一杯喜歡的飲料</button>
+          <button type="button" data-next>一張小卡片</button>
+        </div>
+      </section>
+
+      <section class="stage" data-step="3" aria-live="polite">
+        <p class="q">我們下次見面，最想一起做什麼？</p>
+        <div class="btns">
+          <button type="button" data-next>在海邊散步</button>
+          <button type="button" data-next>吃好吃的</button>
+        </div>
+      </section>
+
+      <section class="stage" data-step="4" aria-live="polite">
+        <p class="q">最後一題：此刻腦海裡浮現的三個字？</p>
+        <div class="btns">
+          <button type="button" id="reveal">想你了</button>
+          <button type="button" id="reveal2">快見面</button>
+        </div>
+      </section>
+    </div>
+
+    <p id="hint" class="hint">提示：可以用鍵盤 <kbd>Enter</kbd> / <kbd>空白鍵</kbd> 選擇答案。</p>
+  </div>
+
+  <div id="final" class="final-card" role="region" aria-live="polite" aria-label="七夕卡片">
     <h2>七夕快樂 ✨</h2>
-    <p>今天是個非常特別的日子，雖然現在我們不在同一個地方，但今天最想分享心情的人是妳。</p>
-    <p>小小的心意先留在這，真正想說的話，等某一個特別的時刻再當面告訴妳~</p>
-    <p>— 來自一個非常在乎你的人</p>
+    <p>今天是個非常特別的日子，雖然我們此刻不在同一個地方，但今天最想分享心情的人是妳。</p>
+    <p>小小的心意先留在這，真正想說的話，等某一個特別的時刻再當面告訴妳～</p>
+    <p class="sig">— 來自一個非常在乎妳的人</p>
+    <div class="hearts" aria-hidden="true"></div>
+    <p class="footer">Made with 💗 for you</p>
   </div>
-</div>
+</main>
 
 <script>
-let step=1;
-function next(){
-  document.querySelector(`.stage[data-step="${step}"]`).classList.remove('active');
-  step++;
-  document.querySelector(`.stage[data-step="${step}"]`).classList.add('active');
-}
-function showCard(){
-  document.querySelector(`.stage[data-step="${step}"]`).classList.remove('active');
-  document.getElementById('final').style.display='block';
-}
+(() => {
+  const stages = Array.from(document.querySelectorAll('.stage'));
+  const finalCard = document.getElementById('final');
+  const bar = document.getElementById('bar');
+  const total = stages.length;
+  let step = 1;
+  let locked = false; // 防暴力連點
+
+  // 初始化
+  updateProgress();
+
+  // 委派所有 [data-next] 的按鈕
+  document.getElementById('stages').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-next]');
+    if (!btn) return;
+    next();
+  });
+
+  // 最後揭曉
+  document.getElementById('reveal').addEventListener('click', showCard);
+  document.getElementById('reveal2').addEventListener('click', showCard);
+
+  // 鍵盤支援：Enter/Space
+  document.addEventListener('keydown', (e) => {
+    const isEnter = e.key === 'Enter';
+    const isSpace = e.key === ' ';
+    if (!isEnter && !isSpace) return;
+    const current = document.querySelector(`.stage[data-step="${step}"]`);
+    if (!current) return;
+    const firstBtn = current.querySelector('button');
+    if (firstBtn) {
+      e.preventDefault();
+      firstBtn.click();
+    }
+  });
+
+  function next(){
+    if (locked) return;
+    if (step >= total) return;
+    locked = true;
+
+    const curr = document.querySelector(`.stage[data-step="${step}"]`);
+    const nextEl = document.querySelector(`.stage[data-step="${step+1}"]`);
+    if (!curr || !nextEl) return;
+
+    curr.classList.remove('active');
+    step++;
+    nextEl.classList.add('active');
+    updateProgress();
+
+    // 將焦點移到新問題
+    setTimeout(() => {
+      const focusTarget = nextEl.querySelector('button');
+      focusTarget?.focus({preventScroll:true});
+      locked = false;
+    }, 180);
+  }
+
+  function showCard(){
+    if (locked) return;
+    const curr = document.querySelector(`.stage[data-step="${step}"]`);
+    curr?.classList.remove('active');
+    document.getElementById('game').style.display = 'none';
+    finalCard.style.display = 'block';
+    finalCard.scrollIntoView({behavior:'smooth', block:'center'});
+    burstHearts(18);
+  }
+
+  function updateProgress(){
+    const p = Math.min( (step-1) / total * 100, 100 );
+    bar.style.width = `${p}%`;
+  }
+
+  // 漂浮愛心效果
+  function burstHearts(n=12){
+    const container = document.querySelector('.hearts');
+    for(let i=0;i<n;i++){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      const x = (50 + (Math.random()*40 - 20)); // 30%~70% 左右
+      const delay = Math.random()*0.6;
+      const scale = 0.8 + Math.random()*1.2;
+      h.style.left = `${x}vw`;
+      h.style.animationDelay = `${delay}s`;
+      h.style.transform = `translate(-50%,0) rotate(45deg) scale(${scale})`;
+      container.appendChild(h);
+      setTimeout(() => h.remove(), 5000);
+    }
+  }
+})();
 </script>
+<noscript>
+  <p style="color:#fff; text-align:center;">需要啟用 JavaScript 才能玩這個小遊戲 💖</p>
+</noscript>
 </body>
 </html>
