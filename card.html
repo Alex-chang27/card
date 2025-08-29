@@ -112,7 +112,6 @@
 
   /* 小字提示 */
   .hint{ color:var(--muted); font-size:12px; margin-top:6px }
-  .footer{ margin-top:16px; color:var(--muted); font-size:12px }
   a{ color:inherit }
   .visually-hidden{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
 </style>
@@ -178,23 +177,19 @@
   const bar = document.getElementById('bar');
   const total = stages.length;
   let step = 1;
-  let locked = false; // 防暴力連點
+  let locked = false;
 
-  // 初始化
   updateProgress();
 
-  // 委派所有 [data-next] 的按鈕
   document.getElementById('stages').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-next]');
     if (!btn) return;
     next();
   });
 
-  // 最後揭曉
   document.getElementById('reveal').addEventListener('click', showCard);
   document.getElementById('reveal2').addEventListener('click', showCard);
 
-  // 鍵盤支援：Enter/Space
   document.addEventListener('keydown', (e) => {
     const isEnter = e.key === 'Enter';
     const isSpace = e.key === ' ';
@@ -222,7 +217,6 @@
     nextEl.classList.add('active');
     updateProgress();
 
-    // 將焦點移到新問題
     setTimeout(() => {
       const focusTarget = nextEl.querySelector('button');
       focusTarget?.focus({preventScroll:true});
@@ -245,13 +239,12 @@
     bar.style.width = `${p}%`;
   }
 
-  // 漂浮愛心效果
   function burstHearts(n=12){
     const container = document.querySelector('.hearts');
     for(let i=0;i<n;i++){
       const h = document.createElement('div');
       h.className = 'heart';
-      const x = (50 + (Math.random()*40 - 20)); // 30%~70% 左右
+      const x = (50 + (Math.random()*40 - 20));
       const delay = Math.random()*0.6;
       const scale = 0.8 + Math.random()*1.2;
       h.style.left = `${x}vw`;
