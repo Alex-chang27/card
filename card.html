@@ -8,13 +8,8 @@
 <meta name="theme-color" content="#0f1020">
 <style>
   :root{
-    --bg:#0f1020;
-    --card:#ffffff;
-    --txt:#f7f7fb;
-    --accent:#ffb3c1;
-    --accent-2:#ffd6e0;
-    --muted:#98a2b3;
-    --ring:#ffd6e0;
+    --bg:#0f1020; --card:#ffffff; --txt:#f7f7fb;
+    --accent:#ffb3c1; --accent-2:#ffd6e0; --muted:#98a2b3; --ring:#ffd6e0;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -24,37 +19,26 @@
     background: radial-gradient(1200px 600px at 50% -10%, #1c1d3a 0%, var(--bg) 60%, #0b0c1a 100%);
     color:var(--txt); text-align:center; display:flex; align-items:center; justify-content:center; padding:20px;
   }
-
-  /* 星空背景 */
   .stars,.stars2,.stars3{
     position:fixed; inset:0; pointer-events:none; z-index:-1; background-repeat:repeat;
     background-image: radial-gradient(1px 1px at 20px 30px, #ffffff66 50%, transparent 51%),
                       radial-gradient(1px 1px at 80px 120px, #ffffff66 50%, transparent 51%),
                       radial-gradient(1px 1px at 200px 50px, #ffffff66 50%, transparent 51%),
                       radial-gradient(1px 1px at 300px 200px, #ffffff66 50%, transparent 51%);
-    animation: drift 120s linear infinite;
-    opacity:.6;
+    animation: drift 120s linear infinite; opacity:.6;
   }
   .stars2{ animation-duration:160s; opacity:.45; filter:blur(.3px)}
   .stars3{ animation-duration:220s; opacity:.35; filter:blur(.6px)}
-
   @keyframes drift{ from{background-position:0 0} to{background-position:-1000px -800px} }
 
-  .app{
-    width:min(720px, 100%); margin:auto; backdrop-filter:saturate(120%) blur(0px);
-  }
-  h1{
-    font-size: clamp(20px, 3.8vw, 32px);
-    margin:4px 0 16px; letter-spacing:.04em;
-  }
+  .app{ width:min(720px, 100%); margin:auto; }
+  h1{ font-size: clamp(20px, 3.8vw, 32px); margin:4px 0 16px; letter-spacing:.04em; }
   p{ line-height:1.8; margin: 0 auto 16px; max-width: 38ch; }
 
   .card{
     background:#1b1c34cc; border:1px solid #24264a; border-radius:16px; padding:18px 14px;
     box-shadow: 0 10px 30px rgb(0 0 0 / 30%);
   }
-
-  /* 問題舞台 */
   .stage{ display:none; opacity:0; transform:translateY(6px); transition:opacity .36s ease, transform .36s ease; }
   .stage.active{ display:block; opacity:1; transform:none; }
   .q{ font-size: clamp(16px, 2.9vw, 22px); margin: 6px 0 14px; }
@@ -70,13 +54,12 @@
   button:active{ transform: translateY(0); }
   button:focus-visible{ outline:2px solid var(--ring); outline-offset:2px }
 
-  /* 進度 */
   .progress{
-    margin: 8px auto 14px; height:8px; width:min(420px, 80%); background:#27274a; border-radius:999px; overflow:hidden;
+    margin: 8px auto 14px; height:8px; width:min(420px, 80%); background:#27274a;
+    border-radius:999px; overflow:hidden;
   }
   .bar{ height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .35s ease; }
 
-  /* 完成卡片 */
   #final{ display:none; }
   .final-card{
     background:var(--card); color:#111; padding:22px; border-radius:16px; margin-top:14px;
@@ -84,6 +67,15 @@
   }
   .final-card h2{ margin: 4px 0 8px }
   .sig{ color:#555; margin-top:10px }
+
+  /* 個人化回覆 */
+  .personalized{ margin-top:10px; text-align:left; max-width: 40ch; margin-inline:auto }
+  .personalized h3{ margin:6px 0 8px; font-size:16px }
+  .chip{
+    display:flex; gap:8px; align-items:flex-start; background:#f7f7fb; color:#222;
+    border-radius:12px; padding:10px 12px; margin:8px 0; box-shadow:0 6px 14px rgb(0 0 0 / 8%);
+  }
+  .chip small{ display:block; color:#666; margin-top:2px }
 
   /* 漂浮愛心 */
   .hearts{ position:relative; height:0; }
@@ -103,14 +95,12 @@
     100%{ transform:translate(-50%,-110vh) rotate(45deg); opacity:0 }
   }
 
-  /* 可及性：減少動態 */
   @media (prefers-reduced-motion: reduce){
     .stars,.stars2,.stars3{ animation:none }
     .stage{ transition:none }
     .heart{ animation:none; display:none }
   }
 
-  /* 小字提示 */
   .hint{ color:var(--muted); font-size:12px; margin-top:6px }
   a{ color:inherit }
   .visually-hidden{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
@@ -128,32 +118,32 @@
       <section class="stage active" data-step="1" aria-live="polite">
         <p class="q">看到「七夕」，你第一個想到的是？</p>
         <div class="btns">
-          <button type="button" data-next>浪漫的星空</button>
-          <button type="button" data-next>甜甜的約會</button>
+          <button type="button" data-next data-choice="浪漫的星空" data-reply="下次帶妳去看一望無際的星空!。">浪漫的星空</button>
+          <button type="button" data-next data-choice="甜甜的約會" data-reply="那就先預約一個只屬於我們的約會日~。">甜甜的約會</button>
         </div>
       </section>
 
       <section class="stage" data-step="2" aria-live="polite">
         <p class="q">如果今晚收到一個小驚喜，你會想是？</p>
         <div class="btns">
-          <button type="button" data-next>一杯喜歡的飲料</button>
-          <button type="button" data-next>一張小卡片</button>
+          <button type="button" data-next data-choice="一杯喜歡的飲料" data-reply="線上怎麼送妳飲料啦哈哈哈哈哈~">一杯喜歡的飲料</button>
+          <button type="button" data-next data-choice="一張小卡片" data-reply="我會把想說的都寫進卡片裡(等等你會看到!)。">一張小卡片</button>
         </div>
       </section>
 
       <section class="stage" data-step="3" aria-live="polite">
         <p class="q">我們下次見面，最想一起做什麼？</p>
         <div class="btns">
-          <button type="button" data-next>在海邊散步</button>
-          <button type="button" data-next>吃好吃的</button>
+          <button type="button" data-next data-choice="在海邊散步" data-reply="想在海風的吹拂下裡牽著妳慢慢走~。">在海邊散步</button>
+          <button type="button" data-next data-choice="吃好吃的" data-reply="已經整理好美食清單了!! 隨時帶妳去~">吃好吃的</button>
         </div>
       </section>
 
       <section class="stage" data-step="4" aria-live="polite">
         <p class="q">最後一題：此刻腦海裡浮現的三個字？</p>
         <div class="btns">
-          <button type="button" id="reveal">想你了</button>
-          <button type="button" id="reveal2">快見面</button>
+          <button type="button" id="reveal" data-choice="想你了" data-reply="我也是，正在想妳~~。">想你了</button>
+          <button type="button" id="reveal2" data-choice="快見面" data-reply="我已經在倒數計時嘍~~。">快見面</button>
         </div>
       </section>
     </div>
@@ -165,6 +155,10 @@
     <h2>七夕快樂 ✨</h2>
     <p>今天是個非常特別的日子，雖然我們此刻不在同一個地方，但今天最想分享心情的人是妳。</p>
     <p>小小的心意先留在這，真正想說的話，等某一個特別的時刻再當面告訴妳～</p>
+    <div id="personalized" class="personalized" hidden>
+      <h3>因為妳的選擇，我想對妳說：</h3>
+      <!-- 這裡會由 JS 動態填入 -->
+    </div>
     <p class="sig">— 來自一個非常在乎妳的人</p>
     <div class="hearts" aria-hidden="true"></div>
   </div>
@@ -176,62 +170,80 @@
   const finalCard = document.getElementById('final');
   const bar = document.getElementById('bar');
   const total = stages.length;
-  let step = 1;
-  let locked = false;
+  let step = 1, locked = false;
+
+  // 記錄選擇
+  const picks = []; // {q:number, choice:string, reply:string}
 
   updateProgress();
 
+  // 點選一般題目
   document.getElementById('stages').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-next]');
     if (!btn) return;
+    recordPick(btn);
     next();
   });
 
-  document.getElementById('reveal').addEventListener('click', showCard);
-  document.getElementById('reveal2').addEventListener('click', showCard);
+  // 最後揭曉
+  document.getElementById('reveal').addEventListener('click', (e)=> showCard(e.currentTarget));
+  document.getElementById('reveal2').addEventListener('click', (e)=> showCard(e.currentTarget));
 
+  // 鍵盤支援
   document.addEventListener('keydown', (e) => {
-    const isEnter = e.key === 'Enter';
-    const isSpace = e.key === ' ';
+    const isEnter = e.key === 'Enter', isSpace = e.key === ' ';
     if (!isEnter && !isSpace) return;
     const current = document.querySelector(`.stage[data-step="${step}"]`);
     if (!current) return;
     const firstBtn = current.querySelector('button');
-    if (firstBtn) {
-      e.preventDefault();
-      firstBtn.click();
-    }
+    if (firstBtn) { e.preventDefault(); firstBtn.click(); }
   });
 
-  function next(){
-    if (locked) return;
-    if (step >= total) return;
-    locked = true;
+  function recordPick(btn){
+    const choice = btn.dataset.choice ?? btn.textContent.trim();
+    const reply  = btn.dataset.reply ?? "";
+    picks.push({ q: step, choice, reply });
+  }
 
+  function next(){
+    if (locked || step >= total) return;
+    locked = true;
     const curr = document.querySelector(`.stage[data-step="${step}"]`);
     const nextEl = document.querySelector(`.stage[data-step="${step+1}"]`);
     if (!curr || !nextEl) return;
-
     curr.classList.remove('active');
     step++;
     nextEl.classList.add('active');
     updateProgress();
-
     setTimeout(() => {
-      const focusTarget = nextEl.querySelector('button');
-      focusTarget?.focus({preventScroll:true});
+      nextEl.querySelector('button')?.focus({preventScroll:true});
       locked = false;
     }, 180);
   }
 
-  function showCard(){
+  function showCard(triggerBtn){
     if (locked) return;
-    const curr = document.querySelector(`.stage[data-step="${step}"]`);
-    curr?.classList.remove('active');
+    // 記錄最後一題的選擇
+    if (triggerBtn) recordPick(triggerBtn);
+    // 出卡片
     document.getElementById('game').style.display = 'none';
     finalCard.style.display = 'block';
+    renderPersonalized();
     finalCard.scrollIntoView({behavior:'smooth', block:'center'});
     burstHearts(18);
+  }
+
+  function renderPersonalized(){
+    const wrap = document.getElementById('personalized');
+    if (!picks.length) return;
+    wrap.innerHTML = '<h3>因為妳的選擇，我想對妳說：</h3>';
+    picks.forEach(({choice, reply}) => {
+      const row = document.createElement('div');
+      row.className = 'chip';
+      row.innerHTML = `<div>你選了：<strong>${choice}</strong><small>${reply}</small></div>`;
+      wrap.appendChild(row);
+    });
+    wrap.hidden = false;
   }
 
   function updateProgress(){
@@ -239,6 +251,7 @@
     bar.style.width = `${p}%`;
   }
 
+  // 漂浮愛心
   function burstHearts(n=12){
     const container = document.querySelector('.hearts');
     for(let i=0;i<n;i++){
